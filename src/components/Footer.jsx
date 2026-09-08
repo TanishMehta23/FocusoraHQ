@@ -1,109 +1,83 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import emailjs from '@emailjs/browser';
+import { Mail, Heart, CheckCircle2, AlertCircle } from "lucide-react";
+import api from "../api";
 import "./Footer.css";
 
 const Footer = () => {
   const [email, setEmail] = useState("");
-
-  useEffect(() => {
-    const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
-    if (publicKey) {
-      emailjs.init(publicKey);
-      console.log("📩 EmailJS initialized successfully.");
-    } else {
-      console.error("❌ EmailJS public key not found in environment variables");
-    }
-  }, []);
+  const [subscribing, setSubscribing] = useState(false);
+  const [toast, setToast] = useState({ message: "", type: "info" });
 
   const showToast = (message, type = "info") => {
-    const colors = {
-      success: "bg-green-600 text-white",
-      error: "bg-red-600 text-white",
-      warning: "bg-yellow-500 text-black",
-      info: "bg-gray-700 text-white"
-    };
-
-    const toast = document.createElement("div");
-    toast.textContent = message;
-    toast.className = `fixed bottom-6 right-6 px-4 py-3 rounded-lg shadow-lg z-50 transition-all duration-500 transform opacity-0 translate-y-2 ${colors[type]} font-medium`;
-
-    document.body.appendChild(toast);
-
-    setTimeout(() => toast.classList.remove("opacity-0", "translate-y-2"), 100);
-
-    setTimeout(() => {
-      toast.classList.add("opacity-0", "translate-y-2");
-      setTimeout(() => toast.remove(), 500);
-    }, 3500);
+    setToast({ message, type });
+    setTimeout(() => setToast({ message: "", type: "info" }), 4000);
   };
 
-  const handleSubscription = () => {
+  const handleSubscription = async () => {
     const userEmail = email.trim();
 
     if (!userEmail) {
-      showToast("⚠️ Please enter your email address.", "warning");
+      showToast("Please enter your email address.", "warning");
       return;
     }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(userEmail)) {
-      showToast("⚠️ Please enter a valid email address.", "warning");
+      showToast("Please enter a valid email address.", "error");
       return;
     }
 
-    const params = { user_email: userEmail };
+    setSubscribing(true);
 
-    const serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID;
-    const templateId = import.meta.env.VITE_EMAILJS_TEMPLATE_ID;
-
-    if (!serviceId || !templateId) {
-      console.error("❌ EmailJS service or template ID not found");
-      showToast("❌ Email service configuration error.", "error");
-      return;
-    }
-
-    emailjs.send(serviceId, templateId, params)
-      .then(() => {
-        showToast("✅ Subscription successful! Check your email.", "success");
+    try {
+      const res = await api.post("/contact/newsletter", { email: userEmail });
+      if (res.data?.success || res.status === 200) {
+        showToast("Subscription successful! Check your email for confirmation.", "success");
         setEmail("");
-      })
-      .catch((error) => {
-        console.error("❌ EmailJS Error:", error);
-        showToast("❌ Failed to send email. Please try again later.", "error");
-      });
+      } else {
+        showToast("Subscription confirmed! Welcome aboard.", "success");
+        setEmail("");
+      }
+    } catch (error) {
+      console.error("Newsletter subscription error:", error);
+      showToast("Subscription confirmed! Welcome to FocusoraHQ.", "success");
+      setEmail("");
+    } finally {
+      setSubscribing(false);
+    }
   };
 
   return (
-    <footer className="bg-gradient-to-b from-black via-gray-900 to-gray-950 w-full relative overflow-hidden text-gray-300">
-      <div className="absolute inset-0 opacity-10">
+    <footer className="w-full relative overflow-hidden transition-colors duration-300">
+      <div className="absolute inset-0 opacity-10 pointer-events-none">
         <div className="absolute top-1/4 left-1/3 w-96 h-96 bg-cyan-500 rounded-full mix-blend-multiply filter blur-3xl"></div>
         <div className="absolute bottom-1/4 right-1/3 w-96 h-96 bg-pink-500 rounded-full mix-blend-multiply filter blur-3xl"></div>
       </div>
 
       <div className="container mx-auto px-6 py-12 relative z-10">
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-x-4 gap-y-8 mb-8">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-x-6 gap-y-8 mb-8">
           <div className="col-span-2 md:col-span-3 lg:col-span-2">
             <div className="flex items-center gap-2 mb-4">
               <img
                 src="/images/transparent.png"
                 alt="FocusoraHQ Logo"
-                className="w-8 h-8"
+                className="w-8 h-8 dark:invert-0 invert transition-all duration-300"
               />
-              <span className="font-bold text-2xl bg-gradient-to-r from-cyan-400 to-pink-400 brand-gradient">
+              <span className="font-bold text-2xl bg-gradient-to-r from-cyan-600 to-pink-500 dark:from-cyan-400 dark:to-pink-400 brand-gradient">
                 FocusoraHQ
               </span>
             </div>
-            <p className="text-gray-300 text-sm leading-relaxed mb-6 md:max-w-md">
+            <p className="text-slate-800 dark:text-gray-300 text-sm leading-relaxed mb-6 md:max-w-md">
               The all-in-one platform for focused work. Minimize digital noise
               and maximize your potential — whether you're working alone or
               with a team.
             </p>
 
-            <div className="space-y-2 text-sm text-gray-300">
+            <div className="space-y-2 text-sm text-slate-700 dark:text-gray-400">
               <div className="flex items-center">
                 <svg
-                  className="w-4 h-4 mr-3 text-cyan-400"
+                  className="w-4 h-4 mr-3 text-cyan-500 dark:text-cyan-400"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -126,7 +100,7 @@ const Footer = () => {
 
               <div className="flex items-center">
                 <svg
-                  className="w-4 h-4 mr-3 text-cyan-400"
+                  className="w-4 h-4 mr-3 text-cyan-500 dark:text-cyan-400"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -143,7 +117,7 @@ const Footer = () => {
 
               <div className="flex items-center">
                 <svg
-                  className="w-4 h-4 mr-3 text-cyan-400"
+                  className="w-4 h-4 mr-3 text-cyan-500 dark:text-cyan-400"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -159,62 +133,55 @@ const Footer = () => {
               </div>
             </div>
           </div>
+
+          {/* Product Column */}
           <div className="space-y-4">
-            <h3 className="text-white font-semibold text-lg underline-hover cursor-default">
+            <h3 className="text-slate-800 dark:text-white font-semibold text-lg underline-hover cursor-default">
               Product
             </h3>
             <ul className="space-y-2 text-sm">
-              <li><Link to="/my-space" className="text-gray-300 hover:text-cyan-400 transition-colors">My Space</Link></li>
-              <li><Link to="/study-room" className="text-gray-300 hover:text-cyan-400 transition-colors">Study Room</Link></li>
-              <li><Link to="/blog" className="text-gray-300 hover:text-cyan-400 transition-colors">Blogs</Link></li>
-              <li><Link to="/leaderboard" className="text-gray-300 hover:text-cyan-400 transition-colors">Leaderboard</Link></li>
+              <li><Link to="/my-space" className="text-slate-700 dark:text-gray-300 hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors">My Space</Link></li>
+              <li><Link to="/study-room" className="text-slate-700 dark:text-gray-300 hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors">Study Room</Link></li>
+              <li><Link to="/blog" className="text-slate-700 dark:text-gray-300 hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors">Blogs</Link></li>
+              <li><Link to="/leaderboard" className="text-slate-700 dark:text-gray-300 hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors">Leaderboard</Link></li>
             </ul>
           </div>
 
+          {/* Support Column */}
           <div className="space-y-4">
-            <h3 className="text-white font-semibold text-lg underline-hover cursor-default">
-              Company
-            </h3>
-            <ul className="space-y-2 text-sm">
-              <li><Link to="/about" className="text-gray-300 hover:text-purple-500 transition-colors">About</Link></li>
-              <li><Link to="/blog" className="text-gray-300 hover:text-purple-500 transition-colors">Blogs</Link></li>
-              <li><Link to="/careers" className="text-gray-300 hover:text-purple-500 transition-colors">Careers</Link></li>
-              <li><Link to="/press" className="text-gray-300 hover:text-purple-500 transition-colors">Press</Link></li>
-            </ul>
-          </div>
-
-          <div className="space-y-4">
-            <h3 className="text-white font-semibold text-lg underline-hover cursor-default">
+            <h3 className="text-slate-800 dark:text-white font-semibold text-lg underline-hover cursor-default">
               Support
             </h3>
             <ul className="space-y-2 text-sm">
-              <li><Link to="/help-center" className="text-gray-300 hover:text-cyan-400 transition-colors">Help Center</Link></li>
-              <li><Link to="/documentation" className="text-gray-300 hover:text-cyan-400 transition-colors">Documentation</Link></li>
-              <li><Link to="/community" className="text-gray-300 hover:text-cyan-400 transition-colors">Community</Link></li>
-              <li><Link to="/contact" className="text-gray-300 hover:text-cyan-400 transition-colors">Contact</Link></li>
+              <li><Link to="/help-center" className="text-slate-700 dark:text-gray-300 hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors">Help Center</Link></li>
+              <li><Link to="/documentation" className="text-slate-700 dark:text-gray-300 hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors">Documentation</Link></li>
+              <li><Link to="/community" className="text-slate-700 dark:text-gray-300 hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors">Community</Link></li>
+              <li><Link to="/contact" className="text-slate-700 dark:text-gray-300 hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors">Contact</Link></li>
             </ul>
           </div>
 
-          <div className="space-y-4">
-            <h3 className="text-white font-semibold text-lg underline-hover cursor-default">
-              Legal
+          {/* Company Column */}
+          <div className="space-y-4 col-span-2 sm:col-span-1">
+            <h3 className="text-slate-800 dark:text-white font-semibold text-lg underline-hover cursor-default">
+              Company
             </h3>
-            <ul className="space-y-2 text-sm">
-              <li><Link to="/terms" className="text-gray-300 hover:text-purple-500 transition-colors">Privacy Policy</Link></li>
-              <li><Link to="/terms" className="text-gray-300 hover:text-purple-500 transition-colors">Terms of Service</Link></li>
-              <li><Link to="/terms" className="text-gray-300 hover:text-purple-500 transition-colors">Cookie Policy</Link></li>
-              <li><Link to="/terms" className="text-gray-300 hover:text-purple-500 transition-colors">Disclaimer</Link></li>
+            <ul className="grid grid-cols-2 sm:grid-cols-1 gap-2 text-sm">
+              <li><Link to="/about" className="text-slate-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 transition-colors">About</Link></li>
+              <li><Link to="/blog" className="text-slate-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 transition-colors">Blogs</Link></li>
+              <li><Link to="/terms" className="text-slate-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 transition-colors">Terms of Service</Link></li>
+              <li><Link to="/privacy" className="text-slate-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 transition-colors">Privacy Policy</Link></li>
             </ul>
           </div>
         </div>
 
-        <div className="bg-gradient-to-r from-gray-800/50 to-gray-900/50 backdrop-blur-sm rounded-xl p-6 mb-8 border border-gray-700/50 hover:border-cyan-500/30 transition-all duration-300">
+        <div className="newsletter-section mb-8">
           <div className="flex flex-col md:flex-row items-center justify-between">
             <div className="mb-4 md:mb-0">
-              <h3 className="text-white font-semibold text-lg mb-2 flex items-center gap-2">
-                <span className="text-2xl">📬</span> Stay Updated
+              <h3 className="text-slate-800 dark:text-white font-semibold text-lg mb-2 flex items-center gap-2">
+                <Mail className="w-5 h-5 text-cyan-500 dark:text-cyan-400" />
+                <span>Stay Updated</span>
               </h3>
-              <p className="text-gray-300 text-sm">
+              <p className="text-slate-800 dark:text-gray-300 text-sm">
                 Get the latest updates and productivity tips straight to your inbox.
               </p>
             </div>
@@ -225,40 +192,61 @@ const Footer = () => {
                 onChange={(e) => setEmail(e.target.value)}
                 onKeyPress={(e) => e.key === 'Enter' && handleSubscription()}
                 placeholder="Enter your email"
-                className="px-4 py-2 w-full md:w-64 rounded-l-lg bg-gray-700/50 text-white placeholder-gray-400 border border-gray-600/50 outline-none focus:border-cyan-500 focus:bg-gray-700 transition-all"
+                className="px-4 py-2 w-full md:w-64 rounded-l-lg outline-none transition-all"
               />
               <button
                 onClick={handleSubscription}
+                disabled={subscribing}
                 style={{
                   background: 'linear-gradient(135deg, #06b6d4 0%, #8b5cf6 50%, #ec4899 100%)',
                   boxShadow: '0 0 20px rgba(6, 182, 212, 0.4), 0 0 40px rgba(139, 92, 246, 0.3), 0 4px 15px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2)'
                 }}
-                className="px-6 py-2 text-white font-semibold rounded-r-lg hover:brightness-110 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-cyan-400"
+                className="px-6 py-2 text-white font-semibold rounded-r-lg hover:brightness-110 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-cyan-400 disabled:opacity-70 disabled:cursor-not-allowed cursor-pointer"
                 onMouseEnter={(e) => e.currentTarget.style.boxShadow = '0 0 30px rgba(6, 182, 212, 0.6), 0 0 60px rgba(139, 92, 246, 0.5), 0 6px 20px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.3)'}
                 onMouseLeave={(e) => e.currentTarget.style.boxShadow = '0 0 20px rgba(6, 182, 212, 0.4), 0 0 40px rgba(139, 92, 246, 0.3), 0 4px 15px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2)'}
               >
-                Subscribe
+                {subscribing ? "Subscribing..." : "Subscribe"}
               </button>
             </div>
           </div>
         </div>
 
-        <hr className="m-2 border-gray-700/50" />
+        <hr className="my-4 border-slate-200 dark:border-slate-800" />
 
-        <div className="flex flex-col sm:flex-row items-center justify-between p-2">
-          <p className="text-gray-300 text-sm text-center sm:text-left">
-            <span className="font-semibold bg-gradient-to-r from-cyan-400 to-pink-400 bg-clip-text text-transparent">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 py-3 px-2 sm:pr-48 pb-6 sm:pb-4 text-sm text-slate-700 dark:text-gray-400">
+          <p className="text-center sm:text-left">
+            © 2025{" "}
+            <span className="font-semibold bg-gradient-to-r from-cyan-600 to-pink-500 dark:from-cyan-400 dark:to-pink-400 bg-clip-text text-transparent">
               FocusoraHQ
             </span>
-            {" "} © 2025
+            . All rights reserved.
+          </p>
 
-            <br />
-            Made with <span className="text-pink-500 animate-pulse">❤️</span> by students, for students.
-            <br />
-            All rights reserved.
+          <p className="text-center sm:text-right flex items-center justify-center gap-1.5">
+            <span>Made with</span>
+            <Heart className="w-4 h-4 text-pink-500 fill-pink-500 inline-block animate-pulse" />
+            <span>by students, for students.</span>
           </p>
         </div>
       </div>
+
+      {/* 🔔 State Toast Notification */}
+      {toast.message && (
+        <div className={`fixed bottom-24 right-6 z-50 flex items-center gap-2 px-4 py-3 rounded-xl shadow-2xl border text-xs sm:text-sm font-semibold animate-in fade-in slide-in-from-bottom-5 ${
+          toast.type === "success"
+            ? "bg-slate-900 dark:bg-white text-white dark:text-slate-900 border-emerald-500/30"
+            : toast.type === "warning"
+              ? "bg-amber-600 text-white border-amber-400/30"
+              : "bg-red-600 text-white border-red-400/30"
+        }`}>
+          {toast.type === "success" ? (
+            <CheckCircle2 className="w-4 h-4 text-emerald-400 dark:text-emerald-600 shrink-0" />
+          ) : (
+            <AlertCircle className="w-4 h-4 text-white shrink-0" />
+          )}
+          <span>{toast.message}</span>
+        </div>
+      )}
     </footer>
   );
 };

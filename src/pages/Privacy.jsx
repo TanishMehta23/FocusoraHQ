@@ -1,21 +1,22 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { 
-  FileText, 
   ShieldCheck, 
-  Users, 
   Lock, 
-  Scale, 
-  ArrowRight, 
+  Eye, 
+  Database, 
+  Cookie, 
+  UserCheck, 
+  Mail, 
   CheckCircle2, 
   Copy, 
   Check, 
   Sparkles,
-  BookOpen
+  ArrowRight
 } from "lucide-react";
 import { useTheme } from "../context/ThemeContext";
 
-const Terms = () => {
+const Privacy = () => {
   const { darkMode } = useTheme();
   const [copiedEmail, setCopiedEmail] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
@@ -32,62 +33,61 @@ const Terms = () => {
   const handleCopyEmail = () => {
     navigator.clipboard?.writeText("focusorahq@gmail.com");
     setCopiedEmail(true);
-    showToast("Email address copied to clipboard!");
+    showToast("Privacy email copied to clipboard!");
     setTimeout(() => setCopiedEmail(false), 2500);
   };
 
-  const sections = [
+  const privacySections = [
     {
-      id: "acceptance",
-      icon: Scale,
-      title: "1. Acceptance of Terms",
-      content: "By accessing, creating an account on, or using FocusoraHQ ('the Service'), you acknowledge that you have read, understood, and agree to be legally bound by these Terms and Conditions. If you do not agree with any part of these terms, you must discontinue use of the platform immediately."
-    },
-    {
-      id: "license",
-      icon: FileText,
-      title: "2. Permitted Use & User License",
-      content: "FocusoraHQ grants you a revocable, non-exclusive, non-transferable, limited license to access and use the platform strictly for personal, non-commercial study, productivity, and collaboration purposes.",
-      rules: [
-        "You may not modify, distribute, or reverse-engineer any component of the software.",
-        "You may not automate artificial leaderboard points, XP gains, or streak manipulation.",
-        "You may not mirror or frame the Service on unauthorized domains."
+      id: "collection",
+      icon: Database,
+      title: "1. Information We Collect",
+      content: "FocusoraHQ collects minimal, essential data strictly to provide personalized study experiences and multiplayer room synchronization:",
+      items: [
+        "Account Profile: Display name, email address, and avatar choices provided during authentication.",
+        "Study Session Metrics: Pomodoro focus minutes, completed tasks, note drafts, and leaderboard XP.",
+        "Technical Diagnostics: Device type, browser preference, and error logs for platform optimization."
       ]
     },
     {
-      id: "accounts",
+      id: "usage",
+      icon: Eye,
+      title: "2. How We Use Your Data",
+      content: "Your data is used solely to empower your personal focus tools:",
+      items: [
+        "Powering real-time presence indicators in shared study rooms.",
+        "Calculating leaderboard XP and maintaining daily study streaks.",
+        "Syncing notes and to-dos securely across your authenticated devices."
+      ]
+    },
+    {
+      id: "security",
       icon: Lock,
-      title: "3. User Accounts & Security",
-      content: "You are responsible for maintaining the confidentiality of your login credentials (via Google OAuth or authenticated email credentials) and for all activities that occur under your account. You agree to notify us immediately of any unauthorized access."
+      title: "3. Enterprise-Grade Security",
+      content: "We enforce HTTPS/TLS 1.3 transit encryption, Firebase Security Rules, and authenticated token authorization. We NEVER sell, rent, or monetize your study data to data brokers or advertising networks."
     },
     {
-      id: "rooms",
-      icon: Users,
-      title: "4. Study Rooms & Code of Conduct",
-      content: "Study Rooms are collaborative environments intended for focused work. Users agree to uphold a supportive, respectful atmosphere.",
-      rules: [
-        "No harassment, hate speech, disruptive spam, or offensive media in room chat or notes.",
-        "Respect quiet study periods and shared room settings.",
-        "FocusoraHQ reserves the right to remove rooms or ban users violating room etiquette."
+      id: "third-party",
+      icon: ShieldCheck,
+      title: "4. Third-Party Integrations",
+      content: "FocusoraHQ integrates with trusted providers for select features:",
+      items: [
+        "Google OAuth & Firebase Auth: Secure identity verification.",
+        "Spotify Web API: In-room focus music and lofi playback.",
+        "MongoDB Atlas: High-availability session persistence."
       ]
     },
     {
-      id: "content",
-      icon: BookOpen,
-      title: "5. User Content & Intellectual Property",
-      content: "You retain full ownership of all study notes, to-do items, and materials you create in FocusoraHQ. By uploading content to collaborative spaces, you grant FocusoraHQ the technical permission required to store, sync, and display that content to your authorized session peers."
+      id: "cookies",
+      icon: Cookie,
+      title: "5. Cookies & Local Storage",
+      content: "We utilize local storage and essential cookies strictly to remember your active theme (Dark/Light mode), ambient sound volume preferences, and authentication session tokens."
     },
     {
-      id: "disclaimer",
-      icon: ShieldCheck,
-      title: "6. Service Reliability & Disclaimers",
-      content: "FocusoraHQ is provided on an 'as is' and 'as available' basis. While we strive for 99.9% uptime and robust real-time synchronization, we make no express warranties regarding uninterrupted service, third-party embeds (e.g. Spotify), or suitability for specific exam requirements."
-    },
-    {
-      id: "termination",
-      icon: Scale,
-      title: "7. Termination & Account Deletion",
-      content: "We reserve the right to suspend or terminate accounts that breach these terms or abuse system resources. You may voluntarily delete your account and personal study data at any time directly through your Profile settings."
+      id: "rights",
+      icon: UserCheck,
+      title: "6. Your Privacy Rights & Deletion",
+      content: "You maintain complete ownership of your data. You may download your notes, update your profile details, or permanently delete your account at any time through your Profile settings."
     }
   ];
 
@@ -97,23 +97,23 @@ const Terms = () => {
       {/* 🚀 Header */}
       <section className="relative overflow-hidden bg-gradient-to-br from-indigo-950 via-blue-900 to-slate-900 text-white py-12 sm:py-20 px-4 sm:px-6">
         <div className="absolute inset-0 opacity-25 pointer-events-none">
-          <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-500 rounded-full mix-blend-screen filter blur-[100px] animate-pulse"></div>
-          <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-purple-500 rounded-full mix-blend-screen filter blur-[100px] animate-pulse delay-700"></div>
+          <div className="absolute top-0 right-1/4 w-96 h-96 bg-cyan-500 rounded-full mix-blend-screen filter blur-[100px] animate-pulse"></div>
+          <div className="absolute bottom-0 left-1/4 w-96 h-96 bg-indigo-500 rounded-full mix-blend-screen filter blur-[100px] animate-pulse delay-700"></div>
         </div>
 
         <div className="max-w-4xl mx-auto text-center relative z-10">
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-500/10 border border-blue-400/20 backdrop-blur-md mb-4 sm:mb-6">
-            <ShieldCheck className="w-4 h-4 text-cyan-400" />
+            <Lock className="w-4 h-4 text-cyan-400" />
             <span className="text-xs font-semibold text-blue-200 uppercase tracking-wide">
-              Legal & Compliance • Effective January 2026
+              Privacy First • User Data Safeguards
             </span>
           </div>
 
           <h1 className="text-3xl sm:text-5xl md:text-6xl font-extrabold tracking-tight mb-3 sm:mb-4">
-            Terms & Conditions
+            Privacy Policy
           </h1>
           <p className="text-xs sm:text-base md:text-lg text-blue-100/90 max-w-2xl mx-auto mb-6 leading-relaxed">
-            Please read these terms carefully before using FocusoraHQ's study rooms, timers, and collaborative workspaces.
+            How FocusoraHQ respects, secures, and handles your personal study data.
           </p>
 
           <div className="inline-flex items-center gap-2 text-xs font-semibold text-blue-200/90 bg-white/5 border border-white/10 px-3.5 py-1.5 rounded-full">
@@ -122,7 +122,7 @@ const Terms = () => {
         </div>
       </section>
 
-      {/* 📄 Main Terms Document */}
+      {/* 📄 Main Content */}
       <div className="max-w-4xl mx-auto px-4 sm:px-6 md:px-8 -mt-6 sm:-mt-10 relative z-20 pb-16">
         
         {/* Quick Summary Pill Bar */}
@@ -131,20 +131,20 @@ const Terms = () => {
         }`}>
           <div className="flex items-center gap-2 text-xs font-semibold text-blue-500">
             <Sparkles className="w-4 h-4" />
-            <span>Key Takeaway: FocusoraHQ is free, private, and designed for supportive learning.</span>
+            <span>Zero Ad-Tracking • No Third-Party Selling • Encrypted Data</span>
           </div>
           <Link
-            to="/privacy"
+            to="/terms"
             className="text-xs font-bold text-blue-500 hover:underline flex items-center gap-1"
           >
-            <span>View Privacy Policy</span>
+            <span>View Terms of Service</span>
             <ArrowRight className="w-3.5 h-3.5" />
           </Link>
         </div>
 
         {/* Structured Sections */}
         <div className="space-y-6">
-          {sections.map((sec) => {
+          {privacySections.map((sec) => {
             const Icon = sec.icon;
 
             return (
@@ -171,14 +171,14 @@ const Terms = () => {
                   {sec.content}
                 </p>
 
-                {sec.rules && (
+                {sec.items && (
                   <div className={`space-y-2 p-3.5 rounded-xl mt-3 ${
                     darkMode ? "bg-slate-950/60 border border-slate-800/60" : "bg-slate-50 border border-slate-200/60"
                   }`}>
-                    {sec.rules.map((rule, rIdx) => (
-                      <div key={rIdx} className="flex items-start gap-2 text-xs leading-relaxed">
+                    {sec.items.map((item, idx) => (
+                      <div key={idx} className="flex items-start gap-2 text-xs leading-relaxed">
                         <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
-                        <span className={darkMode ? "text-slate-300" : "text-slate-700"}>{rule}</span>
+                        <span className={darkMode ? "text-slate-300" : "text-slate-700"}>{item}</span>
                       </div>
                     ))}
                   </div>
@@ -188,13 +188,13 @@ const Terms = () => {
           })}
         </div>
 
-        {/* 📬 Questions & Contact Box */}
+        {/* 📬 Privacy Contact */}
         <div className={`mt-10 rounded-2xl p-6 sm:p-8 border text-center ${
           darkMode ? "bg-slate-900/90 border-slate-800" : "bg-white border-slate-200 shadow-md"
         }`}>
-          <h3 className="text-lg font-bold mb-1">Questions About Our Terms?</h3>
+          <h3 className="text-lg font-bold mb-1">Contact Our Privacy Team</h3>
           <p className={`text-xs sm:text-sm mb-4 ${darkMode ? "text-slate-400" : "text-slate-600"}`}>
-            Our compliance team is happy to assist with any legal, copyright, or data privacy questions.
+            Have questions about your data, cookies, or account deletion? Reach out to us.
           </p>
 
           <div className="flex flex-wrap items-center justify-center gap-3">
@@ -209,7 +209,7 @@ const Terms = () => {
               to="/contact"
               className="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-md shadow-blue-500/20 transition-all"
             >
-              Contact Support
+              Send Inquiry
             </Link>
           </div>
         </div>
@@ -220,8 +220,8 @@ const Terms = () => {
             ← Back to Home
           </Link>
           <span className="text-slate-600">•</span>
-          <Link to="/privacy" className="text-blue-500 hover:underline">
-            Privacy Policy →
+          <Link to="/terms" className="text-blue-500 hover:underline">
+            Terms of Service →
           </Link>
         </div>
       </div>
@@ -237,4 +237,4 @@ const Terms = () => {
   );
 };
 
-export default Terms;
+export default Privacy;

@@ -18,11 +18,13 @@ const env = {
   smtpHost: process.env.SMTP_HOST,
   smtpPort: Number(process.env.SMTP_PORT || 587),
   smtpSecure: String(process.env.SMTP_SECURE || 'false').toLowerCase() === 'true',
-  smtpUser: process.env.SMTP_USER,
-  smtpPass: process.env.SMTP_PASS,
+  smtpUser: (process.env.SMTP_USER || '').trim(),
+  smtpPass: (process.env.SMTP_PASS || '').replace(/\s+/g, ''),
   emailFrom: process.env.EMAIL_FROM,
   geminiApiKey: process.env.GEMINI_API_KEY,
   geminiModel: process.env.GEMINI_MODEL || 'gemini-2.5-flash',
+  groqApiKey: process.env.GROQ_API_KEY || process.env.GEMINI_API_KEY,
+  groqModel: process.env.GROQ_MODEL || process.env.GEMINI_MODEL || 'qwen-2.5-coder-32b',
 };
 
 module.exports = { env };

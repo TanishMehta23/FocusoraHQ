@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
+import { useTheme } from "../context/ThemeContext";
 
 const POMODORO_STORAGE_KEY = "focusora:myspace:pomodoro";
 
@@ -77,7 +78,8 @@ const Pomodoro = ({
   const [isRunning, setIsRunning] = useState(initialState.isRunning);
   const [onBreak, setOnBreak] = useState(initialState.onBreak);
   const soundOn = true;
-  const theme = "dark";
+  const { darkMode } = useTheme();
+  const theme = darkMode ? "dark" : "light";
   const autoStartNext = true;
 
   const intervalRef = useRef(null);
@@ -268,13 +270,13 @@ const Pomodoro = ({
 
   return (
     <div
-      className="w-full max-w-[400px] group relative overflow-hidden rounded-2xl bg-gradient-to-br from-white/15 via-white/10 to-white/5 backdrop-blur-lg border border-white/20 shadow-xl transition-all duration-300 min-h-[300px] flex flex-col"
+      className="w-full max-w-[400px] group relative overflow-hidden rounded-2xl bg-white/95 dark:bg-white/10 backdrop-blur-lg border border-slate-200/50 dark:border-white/20 shadow-xl transition-all duration-300 min-h-[300px] flex flex-col text-slate-800 dark:text-white"
     >
       <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-purple-500/5 opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
 
       <div className="relative p-3 pb-2 flex-1 flex flex-col justify-center items-center space-y-3">
         <div className="mb-0">
-          <h2 className="text-xl font-semibold text-white tracking-wide drop-shadow-lg">
+          <h2 className="text-xl font-semibold text-slate-850 dark:text-white tracking-wide drop-shadow-sm">
             Pomodoro
           </h2>
         </div>
@@ -293,52 +295,95 @@ const Pomodoro = ({
         </div>
 
         <div className="flex flex-col items-center w-full mt-2">
-
-          <div className="flex space-x-3">
-
+          {/* Mobile layout: all 3 in single row */}
+          <div className="flex sm:hidden items-center justify-center gap-2 w-full">
             <button
               onClick={handleStart}
               disabled={isRunning}
               className={`
-        flex items-center gap-2 px-3 py-1.5 rounded-lg font-medium 
-        border border-green-400/50 bg-white/5 backdrop-blur-md
-        transition-all duration-300 select-none
-        ${isRunning ? "opacity-40 cursor-not-allowed" : "hover:bg-green-500/20 hover:border-green-400"}
-      `}
+                flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium 
+                border border-green-400/50 bg-slate-100/50 dark:bg-white/5 backdrop-blur-md
+                transition-all duration-300 select-none cursor-pointer
+                ${isRunning ? "opacity-40 cursor-not-allowed" : "hover:bg-green-500/20 hover:border-green-400"}
+              `}
             >
-              <span className="text-green-400">▶</span>
-              <span className="text-white">Start</span>
+              <span className="text-green-500">▶</span>
+              <span className="text-slate-800 dark:text-white">Start</span>
             </button>
 
             <button
               onClick={handlePause}
               className="
-        flex items-center gap-2 px-3 py-1.5 rounded-lg font-medium
-        border border-amber-400/50 bg-white/5 backdrop-blur-md
-        transition-all duration-300 select-none
-        hover:bg-amber-500/20 hover:border-amber-400
-      "
+                flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium
+                border border-amber-400/50 bg-slate-100/50 dark:bg-white/5 backdrop-blur-md
+                transition-all duration-300 select-none cursor-pointer
+                hover:bg-amber-500/20 hover:border-amber-400
+              "
             >
-              <span className="text-amber-400">⏸</span>
-              <span className="text-white">Pause</span>
+              <span className="text-amber-500">⏸</span>
+              <span className="text-slate-800 dark:text-white">Pause</span>
             </button>
-          </div>
 
-          <div className="mt-2 flex justify-center w-full">
             <button
               onClick={handleReset}
               className="
-        flex items-center gap-2 px-3 py-1.5 rounded-lg font-medium
-        border border-red-400/50 bg-white/5 backdrop-blur-md
-        transition-all duration-300 select-none
-        hover:bg-red-500/20 hover:border-red-400
-      "
+                flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium
+                border border-red-400/50 bg-slate-100/50 dark:bg-white/5 backdrop-blur-md
+                transition-all duration-300 select-none cursor-pointer
+                hover:bg-red-500/20 hover:border-red-400
+              "
             >
-              <span className="text-red-400">🔄</span>
-              <span className="text-white">Reset</span>
+              <span className="text-red-500">🔄</span>
+              <span className="text-slate-800 dark:text-white">Reset</span>
             </button>
           </div>
 
+          {/* Laptop/Desktop layout: Start & Pause top, Reset bottom */}
+          <div className="hidden sm:flex flex-col items-center w-full">
+            <div className="flex space-x-3">
+              <button
+                onClick={handleStart}
+                disabled={isRunning}
+                className={`
+                  flex items-center gap-2 px-3 py-1.5 rounded-lg font-medium 
+                  border border-green-400/50 bg-slate-100/50 dark:bg-white/5 backdrop-blur-md
+                  transition-all duration-300 select-none cursor-pointer
+                  ${isRunning ? "opacity-40 cursor-not-allowed" : "hover:bg-green-500/20 hover:border-green-400"}
+                `}
+              >
+                <span className="text-green-500">▶</span>
+                <span className="text-slate-800 dark:text-white">Start</span>
+              </button>
+
+              <button
+                onClick={handlePause}
+                className="
+                  flex items-center gap-2 px-3 py-1.5 rounded-lg font-medium
+                  border border-amber-400/50 bg-slate-100/50 dark:bg-white/5 backdrop-blur-md
+                  transition-all duration-300 select-none cursor-pointer
+                  hover:bg-amber-500/20 hover:border-amber-400
+                "
+              >
+                <span className="text-amber-500">⏸</span>
+                <span className="text-slate-800 dark:text-white">Pause</span>
+              </button>
+            </div>
+
+            <div className="mt-2 flex justify-center w-full">
+              <button
+                onClick={handleReset}
+                className="
+                  flex items-center gap-2 px-3 py-1.5 rounded-lg font-medium
+                  border border-red-400/50 bg-slate-100/50 dark:bg-white/5 backdrop-blur-md
+                  transition-all duration-300 select-none cursor-pointer
+                  hover:bg-red-500/20 hover:border-red-400
+                "
+              >
+                <span className="text-red-500">🔄</span>
+                <span className="text-slate-800 dark:text-white">Reset</span>
+              </button>
+            </div>
+          </div>
         </div>
 
         <div className="text-center mt-1">
@@ -355,7 +400,7 @@ const Pomodoro = ({
         <div className="grid grid-cols-2 gap-3 w-full max-w-xs mt-2">
 
           <div className="space-y-2">
-            <label className="block text-sm font-medium text-gray-200 tracking-wide">
+            <label className="block text-sm font-medium text-slate-700 dark:text-gray-200 tracking-wide">
               Work Duration
             </label>
 
@@ -368,16 +413,16 @@ const Pomodoro = ({
               onChange={handleWorkDurationChange}
               className="
         w-full px-3 py-2 rounded-lg
-        bg-white/10 border border-green-400/40
-        text-white placeholder-gray-400
+        bg-slate-100/50 dark:bg-white/10 border border-green-400/40
+        text-slate-800 dark:text-white placeholder-gray-400
         focus:outline-none focus:ring-2 focus:ring-green-400/50
-        focus:bg-white/20 transition-all duration-200
+        focus:bg-slate-200 dark:focus:bg-white/20 transition-all duration-200
       "
             />
           </div>
 
           <div className="space-y-2">
-            <label className="block text-sm font-medium text-gray-200 tracking-wide">
+            <label className="block text-sm font-medium text-slate-700 dark:text-gray-200 tracking-wide">
               Break Duration
             </label>
 
@@ -385,14 +430,7 @@ const Pomodoro = ({
               id="breakSelect"
               value={breakDuration}
               onChange={handleBreakDurationChange}
-              className="
-    w-full px-3 py-2 rounded-lg
-    bg-white/10 border border-yellow-400/40
-    text-white
-    focus:outline-none focus:ring-2 focus:ring-yellow-400/50
-    focus:bg-white/20 transition-all duration-200
-    appearance-none
-  "
+              className="w-full px-3 py-2 rounded-lg bg-slate-100/50 dark:bg-white/10 border border-yellow-400/40 text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-yellow-400/50 focus:bg-slate-200 dark:focus:bg-white/20 transition-all duration-200 appearance-none"
             >
               <option value={5} className="bg-gray-900 text-white">Short (5 min)</option>
               <option value={15} className="bg-gray-900 text-white">Long (15 min)</option>
